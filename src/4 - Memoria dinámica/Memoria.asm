@@ -76,15 +76,21 @@ strCmp:
 ;aunque podría corresponderse a la cadena vacía.
 ; char* strClone(char* a)
 strClone:
-	push RBP
-	mov RBP, RSP
+	;push RBP
+	;mov RBP, RSP
+	;push R12
+	;mov RDI, [RDI]
+	;mov R12, RDI
+	;mov RDI, 
+	;call malloc
 	
 
 
 
 
-	pop RBP
-	ret
+	;pop R12
+	;pop RBP
+	;ret
 
 ; void strDelete(char* a)
 strDelete:
@@ -96,6 +102,19 @@ strPrint:
 
 ; uint32_t strLen(char* a)
 strLen:
+	push RBP
+	mov RBP, RSP
+	mov AL, BYTE [RDI]
+	xor EAX, EAX; contador
+.loop:
+	cmp AL, 0
+	je .fin
+	add EAX, 1 ;sumo 1
+	inc RDI
+	mov AL, BYTE [RDI]
+	jmp .loop
+.fin:
+	pop RBP
 	ret
 
 
