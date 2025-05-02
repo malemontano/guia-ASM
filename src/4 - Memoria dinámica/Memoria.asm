@@ -27,18 +27,18 @@ strCmp:
 	mov BL, byte [RSI] ;primer caracter de b
 	
 .loop:
-	;mov AL, byte [RDI]   
+	;mov AL, byte [RDI]
     ;mov BL, byte [RSI]
 	cmp AL, 0 ;chequeo si es el caracter nulo
 	je .check ;si es el caracter nulo ya recorri toda la cadena, chequeo si la otra cadena es mas larga o no
 	cmp BL, 0 ;chequeo si es el caracter nulo
 	je .check ;si es el caracter nulo ya recorri toda la cadena
 	;si estoy aca son dos caracteres no nulos
-	cmp AL, BL 
+	cmp AL, BL
 	;no son iguales
 	jl .a_is_smaller
 	jg .a_is_greater
-	je .equal 
+	je .equal
 	
 .a_is_smaller:
 	mov EAX, 1
@@ -75,25 +75,46 @@ strCmp:
 ;Genera una copia del string pasado por parámetro. El puntero pasado siempre es válido
 ;aunque podría corresponderse a la cadena vacía.
 ; char* strClone(char* a)
+
 strClone:
-	;push RBP
-	;mov RBP, RSP
-	;push R12
-	;mov RDI, [RDI]
-	;mov R12, RDI
-	;mov RDI, 
-	;call malloc
+	push RBP
+	mov RBP, RSP
+	push R12
+	push R13
+	mov R12, RDI
+	xor RAX, RAX
+	call strLen
+
+	mov RDI, RAX
+	add RDI, 1
+
+	call malloc ;tengo en RAX la direccion de memoria reservada, Voy a devolver RAX
+	cmp RAX, 0
+	je .fin 
+	mov RSI, RAX ;Voy a usar RSI para copiar el str
+	mov R13, RAX
+	.loop:
+	mov AL, BYTE [R12]
+	;copio el caracter actual a RSI
+	mov BYTE [RSI], AL
+	cmp AL, 0 ;chequeo si llegue al final del str
+	je .fin
+	;avanzo los punteros
+	inc R12
+	inc RSI
+
+	jmp .loop
 	
-
-
-
-
-	;pop R12
-	;pop RBP
-	;ret
+.fin:
+	mov RAX, R13
+	pop R13
+	pop R12
+	pop RBP
+	ret
 
 ; void strDelete(char* a)
 strDelete:
+	call free
 	ret
 
 ; void strPrint(char* a, FILE* pFile)
@@ -104,16 +125,17 @@ strPrint:
 strLen:
 	push RBP
 	mov RBP, RSP
+	xor ECX, ECX; contador
 	mov AL, BYTE [RDI]
-	xor EAX, EAX; contador
 .loop:
 	cmp AL, 0
 	je .fin
-	add EAX, 1 ;sumo 1
+	add ECX, 1 ;sumo 1
 	inc RDI
 	mov AL, BYTE [RDI]
 	jmp .loop
 .fin:
+	mov EAX, ECX
 	pop RBP
 	ret
 
